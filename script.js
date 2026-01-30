@@ -34,7 +34,7 @@ function getRandomInt(min, max) {
 }
 
 function getRandomWord(dictionaryMemo, firstWordsCount) {
-  const maxIndex = firstWordsCount < dictionaryMemo.length ? firstWordsCount : dictionaryMemo.length;
+  const maxIndex = (firstWordsCount != 0 && firstWordsCount < dictionaryMemo.length) ? firstWordsCount : dictionaryMemo.length;
   const index = getRandomInt(0, maxIndex);
   return dictionaryMemo[index].word;
 }
