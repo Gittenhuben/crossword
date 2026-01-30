@@ -1,6 +1,10 @@
 import { readFileSync } from 'fs';
 
-const MAX_WORDS = 15;
+const MAX_WORDS = 23;
+const FIELD_FILENAME = 'field.txt';
+const DICTIONARY_FILENAME = 'words.txt';
+const EMPTY_CHAR = '_';
+const LOG_TIME = false;
 
 
 function readLinesFromFile(fileName, encoding) {
@@ -94,14 +98,14 @@ function generateField(template, dictionariesMemo, firstWordsCount) {
     let j=0;
 
     while (j < fieldHeight) {
-      while (j < fieldHeight && template[j][i] !== '*') {
+      while (j < fieldHeight && template[j][i] !== EMPTY_CHAR) {
         j++;
       }
       if (j >= fieldHeight) {
         continue;
       }
       const jStart = j;
-      while (j < fieldHeight && template[j][i] === '*') {
+      while (j < fieldHeight && template[j][i] === EMPTY_CHAR) {
         j++;
       }
       const jEnd = j - 1;
@@ -130,14 +134,14 @@ function generatePositionsMemo(template) {
     let j=0;
 
     while (j < fieldHeight) {
-      while (j < fieldHeight && template[j][i] !== '*') {
+      while (j < fieldHeight && template[j][i] !== EMPTY_CHAR) {
         j++;
       }
       if (j >= fieldHeight) {
         continue;
       }
       const jStart = j;
-      while (j < fieldHeight && template[j][i] === '*') {
+      while (j < fieldHeight && template[j][i] === EMPTY_CHAR) {
         j++;
       }
       const jEnd = j - 1;
@@ -145,12 +149,12 @@ function generatePositionsMemo(template) {
       const positions = [];
       for (let jj = jStart; jj <= jEnd; jj++) {
         let ii = i;
-        while (ii >= 0 && template[jj][ii] === '*') {
+        while (ii >= 0 && template[jj][ii] === EMPTY_CHAR) {
           ii--;
         }
         const iiStart = ii + 1;
         ii = i;
-        while (ii < fieldWidth && template[jj][ii] === '*') {
+        while (ii < fieldWidth && template[jj][ii] === EMPTY_CHAR) {
           ii++;
         }
         const iiEnd = ii - 1;
@@ -174,14 +178,14 @@ function getVerticalWordsCount(template) {
     let j=0;
 
     while (j < fieldHeight) {
-      while (j < fieldHeight && template[j][i] !== '*') {
+      while (j < fieldHeight && template[j][i] !== EMPTY_CHAR) {
         j++;
       }
       if (j >= fieldHeight) {
         continue;
       }
       const jStart = j;
-      while (j < fieldHeight && template[j][i] === '*') {
+      while (j < fieldHeight && template[j][i] === EMPTY_CHAR) {
         j++;
       }
       const jEnd = j - 1;
@@ -202,14 +206,14 @@ function getHorizontalWordsCount(template) {
     let i=0;
 
     while (i < fieldWidth) {
-      while (i < fieldWidth && template[j][i] !== '*') {
+      while (i < fieldWidth && template[j][i] !== EMPTY_CHAR) {
         i++;
       }
       if (i >= fieldWidth) {
         continue;
       }
       const iStart = i;
-      while (i < fieldWidth && template[j][i] === '*') {
+      while (i < fieldWidth && template[j][i] === EMPTY_CHAR) {
         i++;
       }
       const iEnd = i - 1;
@@ -228,7 +232,7 @@ function checkField(template, fieldTemp, sets) {
     let i=0;
 
     while (i < fieldWidth) {
-      while (i < fieldWidth && template[j][i] !== '*') {
+      while (i < fieldWidth && template[j][i] !== EMPTY_CHAR) {
         i++;
       }
       if (i >= fieldWidth) {
@@ -236,7 +240,7 @@ function checkField(template, fieldTemp, sets) {
       }
       const iStart = i;
       let word = '';
-      while (i < fieldWidth && template[j][i] === '*') {
+      while (i < fieldWidth && template[j][i] === EMPTY_CHAR) {
         word += fieldTemp[j][i];
         i++;
       }
@@ -261,14 +265,14 @@ function checkUniqueWords(template, fieldTemp) {
     let i=0;
 
     while (i < fieldWidth) {
-      while (i < fieldWidth && template[j][i] !== '*') {
+      while (i < fieldWidth && template[j][i] !== EMPTY_CHAR) {
         i++;
       }
       if (i >= fieldWidth) {
         continue;
       }
       let word = '';
-      while (i < fieldWidth && template[j][i] === '*') {
+      while (i < fieldWidth && template[j][i] === EMPTY_CHAR) {
         word += fieldTemp[j][i];
         i++;
       }
@@ -284,7 +288,7 @@ function checkUniqueWords(template, fieldTemp) {
     let j=0;
 
     while (j < fieldHeight) {
-      while (j < fieldHeight && template[j][i] !== '*') {
+      while (j < fieldHeight && template[j][i] !== EMPTY_CHAR) {
         j++;
       }
       if (j >= fieldHeight) {
@@ -292,7 +296,7 @@ function checkUniqueWords(template, fieldTemp) {
       }
       const jStart = j;
       let word = '';
-      while (j < fieldHeight && template[j][i] === '*') {
+      while (j < fieldHeight && template[j][i] === EMPTY_CHAR) {
         word += fieldTemp[j][i];
         j++;
       }
@@ -375,8 +379,8 @@ function generateSets(dictionaries) {
   return sets;
 }
 
-const fieldTemplate = readLinesFromFile('field.txt', 'utf-8');
-const dictionaryFull = readLinesFromFile('src_sorted.txt', 'utf-8');
+const fieldTemplate = readLinesFromFile(FIELD_FILENAME, 'utf-8');
+const dictionaryFull = readLinesFromFile(DICTIONARY_FILENAME, 'utf-8');
 
 const verticalWordsCountArray = getVerticalWordsCount(fieldTemplate);
 const horizontalWordsCountArray = getHorizontalWordsCount(fieldTemplate);
@@ -387,9 +391,9 @@ const dictionariesMemo = generateDictionariesMemo(dictionaries, frequencyTables,
 const sets = generateSets(dictionaries);
 
 
-//const time1 = Date.now();
+const time1 = Date.now();
 
-for (let i = 0; i < 1000000000; i++) {
+for (let i = 0; i < 10000000000; i++) {
   const fieldTemp = generateField(fieldTemplate, dictionariesMemo, MAX_WORDS);
   if (checkField(fieldTemplate, fieldTemp, sets)) {
     printField(fieldTemp);
@@ -397,5 +401,7 @@ for (let i = 0; i < 1000000000; i++) {
   }
 }
 
-//const time2 = Date.now();
-//console.log(time2 - time1)
+const time2 = Date.now();
+if (LOG_TIME) {
+  console.log(time2 - time1, 'ms');
+}
